@@ -14,8 +14,10 @@ Done
 - User
 - Campaign
 - WikiPage / Adventure Log (read)
+- Characters (read)
+- Dynamic Sheet Templates
 
 ToDo
 - WikiPage / Adventure Log (create, update, delete)
-- Characters
-- Dynamic Sheet Templates
+- Characters (create, update, delete)
+- Dynamic Sheet Templates (create, update, submit)
