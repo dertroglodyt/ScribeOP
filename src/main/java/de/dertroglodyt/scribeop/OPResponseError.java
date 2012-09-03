@@ -21,6 +21,7 @@ public class OPResponseError {
         , CREATED(201)
         , NO_CONTENT(204)
         , REQUEST_ERROR(400)
+        , UNAUTORIZED(401)
         , FORBIDDEN(403)
         , NOT_FOUND(404)
         , SERVER_ERROR(500)
@@ -84,9 +85,9 @@ public class OPResponseError {
         public final ErrorType type;
         public final String message;
 
-        public OPResponseCode(String msg) {
+        public OPResponseCode(ErrorType aType, String msg) {
             super();
-            type = ErrorType.SUCCESS;
+            type = aType;
             message = msg;
         }
 
@@ -113,12 +114,21 @@ public class OPResponseError {
 
     public OPResponseError(Response response) throws JSONException {
         super();
-        JSONObject jobj = new JSONObject(response.getBody());
+//        System.out.println(response.getCode() + " Response body: " + response.getBody());
+        JSONObject jobj;
+        try {
+            jobj = new JSONObject(response.getBody());
+        } catch(JSONException ex) {
+            htmlCode = HtmlCode.get(response.getCode());
+            errors = new OPResponseCode[1];
+            errors[0] = new OPResponseCode(ErrorType.UNKNOWN, response.getBody());
+            return;
+        }
         htmlCode = HtmlCode.get(jobj.getInt("http_status"));
 
         if (response.isSuccessful()) {
             errors = new OPResponseCode[1];
-            errors[0] = new OPResponseCode(response.getBody());
+            errors[0] = new OPResponseCode(ErrorType.SUCCESS, response.getBody());
             return;
         }
 

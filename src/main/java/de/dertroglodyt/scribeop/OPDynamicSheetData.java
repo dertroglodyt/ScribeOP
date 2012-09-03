@@ -41,4 +41,8 @@ public class OPDynamicSheetData {
         return sb.toString();
     }
 
+    public JSONObject asJSONObject() {
+        return new JSONObject(data);
+    }
+
 }

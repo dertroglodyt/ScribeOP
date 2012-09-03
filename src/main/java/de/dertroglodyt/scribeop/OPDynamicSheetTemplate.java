@@ -12,8 +12,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.StringTokenizer;
+import org.scribe.model.Response;
 
 /**
  *
@@ -23,6 +22,7 @@ public class OPDynamicSheetTemplate {
 
     private static final String URL_INDEX = "http://api.obsidianportal.com/v1/dynamic_sheet_templates.json";
     private static final String URL_DST = "http://api.obsidianportal.com/v1/dynamic_sheet_templates/$id.json";
+    private static final String URL_SUBMIT = "http://api.obsidianportal.com/v1/dynamic_sheet_templates/$id/submit.json";
     private static final DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
     // public fields
@@ -48,7 +48,7 @@ public class OPDynamicSheetTemplate {
 
     public OPDynamicSheetTemplate(JSONObject json) throws JSONException, ParseException {
         super();
-        System.out.println(json);
+//        System.out.println(json);
         id = json.getString("id");
         name = json.getString("name");
         slug = json.getString("slug");
@@ -114,11 +114,33 @@ public class OPDynamicSheetTemplate {
         String st = htmlTemplate;
         while (st.indexOf("dsf_") >= 0) {
             st = st.substring(st.indexOf("dsf_")+4);
-            String field = st.substring(0, st.indexOf("\""));
+            String field = st.substring(0, st.indexOf('"'));
             list.add(field);
         }
         return list;
     }
 
-    // ToDo create, update, submit
+    public static OPDynamicSheetTemplate update(OPService service, String dstID
+            , String htmlTemplate, String css, String javaScript
+            ) throws JSONException, ParseException {
+        JSONObject json = new JSONObject();
+        json.put("html_template_submitted", htmlTemplate);
+        json.put("css_submitted", css);
+        json.put("javascript_submmitted", javaScript);
+        JSONObject wp = new JSONObject();
+        wp.put("dynamic_sheet_template", json);
+        String payload = wp.toString();
+//        System.out.println(payload);
+        Response response = service.put(URL_DST.replace("$id", dstID), payload);
+        if (!response.isSuccessful()) {
+            OPResponseError error = new OPResponseError(response);
+//            System.out.println(error.toString());
+            throw new UnknownError(error.toString());
+        }
+        return new OPDynamicSheetTemplate(new JSONObject(response.getBody()));
+    }
+
+    public static Response submit(OPService service, String dstID) {
+        return service.put(URL_SUBMIT.replace("$id", dstID), "");
+    }
 }

@@ -11,7 +11,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import org.scribe.model.Response;
 
 /**
@@ -125,14 +124,12 @@ public class OPWikiPage {
         json.put("game_master_info", gameMasterInfo);
         JSONObject wp = new JSONObject();
         wp.put("wiki_page", json);
-        String payload = wp.toString().replace("\"", "'");
-        System.out.println(payload);
-        HashMap<String, String> parms = new HashMap<String, String>(0);
-        parms.put("json", wp.toString().replace("\"", "'"));
+        String payload = wp.toString();
+//        System.out.println(payload);
         Response response = service.post(URL_INDEX.replace("$id", campaignID), payload);
         if (!response.isSuccessful()) {
             OPResponseError error = new OPResponseError(response);
-            System.out.println(error.toString());
+//            System.out.println(error.toString());
             throw new UnknownError(error.toString());
         }
         return new OPWikiPage(new JSONObject(response.getBody()));
@@ -146,21 +143,19 @@ public class OPWikiPage {
         json.put("game_master_info", gameMasterInfo);
         JSONObject wp = new JSONObject();
         wp.put("wiki_page", json);
-        String payload = wp.toString().replace("\"", "'");
-        System.out.println(payload);
-        HashMap<String, String> parms = new HashMap<String, String>(0);
-        parms.put("json", wp.toString().replace("\"", "'"));
-        Response response = service.put(URL_INDEX.replace("$id", campaignID).replace("$page", pageID), payload);
+        String payload = wp.toString();
+//        System.out.println(payload);
+        Response response = service.put(URL_PAGE.replace("$id", campaignID).replace("$page", pageID), payload);
         if (!response.isSuccessful()) {
             OPResponseError error = new OPResponseError(response);
-            System.out.println(error.toString());
+//            System.out.println(error.toString());
             throw new UnknownError(error.toString());
         }
         return new OPWikiPage(new JSONObject(response.getBody()));
     }
 
     public static Response delete(OPService service, String campaignID, String pageID) {
-        return service.delete(URL_INDEX.replace("$id", campaignID).replace("$page", pageID), "");
+        return service.delete(URL_PAGE.replace("$id", campaignID).replace("$page", pageID), "");
     }
 
     public final boolean isPost() {

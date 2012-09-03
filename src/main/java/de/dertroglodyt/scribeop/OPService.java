@@ -4,9 +4,6 @@
  */
 package de.dertroglodyt.scribeop;
 
-import de.dertroglodyt.scribeop.json.JSONArray;
-import de.dertroglodyt.scribeop.json.JSONObject;
-import java.util.HashMap;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
@@ -29,6 +26,7 @@ public class OPService {
                 .apiKey("iqH1tk58qWVI1eeBLY6m")
                 .apiSecret("J8OlNmuezi8SvxJ3W3eyEbT9GeZxmf9B45f98tQI")
 //                .scope(SCOPE)
+//                .debug()
                 .build();
         // TODO: authenticate if connect error
 //        Token requestToken = service.getRequestToken();
@@ -60,34 +58,34 @@ public class OPService {
 
     public Response post(String url, String payload) {
         OAuthRequest request = new OAuthRequest(Verb.POST, url);
+        request.addHeader("Content-Length", Integer.toString(payload.length()));
+//        request.addHeader("Content-Type", "application/json");
+        request.addHeader("Content-Type", "text/html");
         request.addPayload(payload);
-        System.out.println("POST-request: " + request.getBodyContents());
+//        System.out.println("POST-request: " + request.getBodyContents());
         mService.signRequest(mAccessToken, request);
-        return request.send();
-    }
-
-    public Response post(String url, HashMap<String, String> bodyParms) {
-        OAuthRequest request = new OAuthRequest(Verb.POST, url);
-        for (String key : bodyParms.keySet()) {
-            request.addBodyParameter(key, bodyParms.get(key));
-        }
-        System.out.println("POST-request: " + request.getBodyContents());
-        mService.signRequest(mAccessToken, request);
+//        System.out.println("POST-header: " + request.getHeaders());
         return request.send();
     }
 
     public Response put(String url, String payload) {
         OAuthRequest request = new OAuthRequest(Verb.PUT, url);
+        request.addHeader("Content-Length", Integer.toString(payload.length()));
+//        request.addHeader("Content-Type", "application/json");
+        request.addHeader("Content-Type", "text/html");
         request.addPayload(payload);
-        System.out.println("PUT-request: " + request.getBodyContents());
+//        System.out.println("PUT-request: " + request.getBodyContents());
         mService.signRequest(mAccessToken, request);
         return request.send();
     }
 
     public Response delete(String url, String payload) {
         OAuthRequest request = new OAuthRequest(Verb.DELETE, url);
+        request.addHeader("Content-Length", Integer.toString(payload.length()));
+//        request.addHeader("Content-Type", "application/json");
+        request.addHeader("Content-Type", "text/html");
         request.addPayload(payload);
-        System.out.println("DELETE-request: " + request.getBodyContents());
+//        System.out.println("DELETE-request: " + request.getBodyContents());
         mService.signRequest(mAccessToken, request);
         return request.send();
     }

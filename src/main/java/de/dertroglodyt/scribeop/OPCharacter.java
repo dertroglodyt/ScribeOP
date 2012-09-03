@@ -11,6 +11,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.scribe.model.Response;
 
 /**
  *
@@ -130,6 +131,58 @@ public class OPCharacter {
         return characters;
     }
 
+    public static OPCharacter create(OPService service, String campaignID, String authorID
+            , String name, String tagline, String description, String bio, String gameMasterInfo
+            , boolean isGMOnly, String dstTemplateID, OPDynamicSheetData dsData
+            ) throws JSONException, ParseException {
+        JSONObject json = new JSONObject();
+        json.put("name", name);
+        json.put("author_id", authorID);
+        json.put("tagline", tagline);
+        json.put("description", description);
+        json.put("bio", bio);
+        json.put("game_master_info", gameMasterInfo);
+        json.put("is_game_master_only", isGMOnly);
+        json.put("dynamic_sheet_template_id", dstTemplateID);
+        json.put("dynamic_sheet", dsData.asJSONObject());
+        JSONObject wp = new JSONObject();
+        wp.put("character", json);
+        String payload = wp.toString();
+//        System.out.println(payload);
+        Response response = service.post(URL_INDEX.replace("$id", campaignID), payload);
+        if (!response.isSuccessful()) {
+            OPResponseError error = new OPResponseError(response);
+//            System.out.println(error.toString());
+            throw new UnknownError(error.toString());
+        }
+        return new OPCharacter(new JSONObject(response.getBody()));
+    }
+
+    public static OPCharacter update(OPService service, String campaignID, String characterID
+            , String bio, boolean isGMOnly, String gameMasterInfo, OPDynamicSheetData dsData
+            ) throws JSONException, ParseException {
+        JSONObject json = new JSONObject();
+        json.put("bio", bio);
+        json.put("game_master_info", gameMasterInfo);
+        json.put("is_game_master_only", isGMOnly);
+        json.put("dynamic_sheet", dsData.asJSONObject());
+        JSONObject wp = new JSONObject();
+        wp.put("character", json);
+        String payload = wp.toString();
+//        System.out.println(payload);
+        Response response = service.put(URL_CHARACTER.replace("$id", campaignID).replace("$charID", characterID), payload);
+        if (!response.isSuccessful()) {
+            OPResponseError error = new OPResponseError(response);
+//            System.out.println(error.toString());
+            throw new UnknownError(error.toString());
+        }
+        return new OPCharacter(new JSONObject(response.getBody()));
+    }
+
+    public static Response delete(OPService service, String campaignID, String characterID) {
+        return service.delete(URL_CHARACTER.replace("$id", campaignID).replace("$charID", characterID), "");
+    }
+
     @Override
     public String toString() {
         return name;
@@ -164,5 +217,4 @@ public class OPCharacter {
         return sb.toString();
     }
 
-    // ToDo create, update, delete
 }
