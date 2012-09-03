@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
+import org.scribe.model.Token;
 
 /**
  *
@@ -41,8 +42,14 @@ public class GesamtTest {
     }
 
     @Test
-    public void testUser() throws JSONException, ParseException {
-        OPService service = OPService.connect();
+    public void testAll() throws JSONException, ParseException {
+        // API Test key/secret
+        String apiKey = "R5d5uehTpOJEBPBIgi5K";
+        String apiSecret = "AGtPlGn46OaPrTc8GyYdcHXB5L0LoH3elnv3m2N9";
+//        OPService service = OPService.firstConnect(apiKey, apiSecret);
+        // API Test access token
+        Token accessToken = new Token("YOBBvWwpWievTf0WBxaW", "iWNTYItNR1AQMMhXN9VlyECrVhsiqAhsswYyZeob");
+        OPService service = OPService.connect(apiKey, apiSecret, accessToken);
         OPUser user = new OPUser(service, null);
         System.out.println(user.toLongString());
         for (int i=0; i < user.campaigns.length; i++) {

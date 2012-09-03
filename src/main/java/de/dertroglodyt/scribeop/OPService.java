@@ -4,11 +4,13 @@
  */
 package de.dertroglodyt.scribeop;
 
+import java.util.Scanner;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
 import org.scribe.model.Verb;
+import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
 
 /**
@@ -18,29 +20,37 @@ import org.scribe.oauth.OAuthService;
 public class OPService {
 
     private final OAuthService mService;
-    private final Token mAccessToken;
+    public final Token mAccessToken;
 
-    static public OPService connect() {
+    static public OPService firstConnect(String apiKey, String apiSecret) {
         OAuthService service = new ServiceBuilder()
                 .provider(ObsidianPortalApi.class)
-                .apiKey("iqH1tk58qWVI1eeBLY6m")
-                .apiSecret("J8OlNmuezi8SvxJ3W3eyEbT9GeZxmf9B45f98tQI")
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
 //                .scope(SCOPE)
 //                .debug()
                 .build();
-        // TODO: authenticate if connect error
-//        Token requestToken = service.getRequestToken();
+        Token requestToken = service.getRequestToken();
 //        System.out.println("Request token: " + requestToken);
-//        System.out.println(ObsidianPortalApi.AUTHORIZATION_URL.replaceAll("%s", requestToken.getToken()));
-//        System.out.print(">>");
-//        Scanner in = new Scanner(System.in);
-//        Verifier verifier = new Verifier(in.nextLine());
-//        System.out.println();
-//        Token accessToken = service.getAccessToken(requestToken, verifier);
-//        System.out.println("Access token: " + accessToken);
+        System.out.println(ObsidianPortalApi.AUTHORIZATION_URL.replaceAll("%s", requestToken.getToken()));
+        System.out.print(">>");
+        Scanner in = new Scanner(System.in);
+        Verifier verifier = new Verifier(in.nextLine());
+        System.out.println();
+        Token accessToken = service.getAccessToken(requestToken, verifier);
+        System.out.println("Access token: " + accessToken);
 
-//        Token requestToken = new Token("53xLlaBaSmHDhgYtaI6L", "Shr8CzM2B0vJUC1QTb3YncqF16b1QTmz3DU2a9PC");
-        Token accessToken = new Token("jlmZyxS6tnzWpCvZxJsa", "KYET24Pm5kaeh6TNHRDH4o2m8duTyjWLXO4PybwY");
+        return new OPService(service, accessToken);
+    }
+
+    static public OPService connect(String apiKey, String apiSecret, Token accessToken) {
+        OAuthService service = new ServiceBuilder()
+                .provider(ObsidianPortalApi.class)
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+//                .scope(SCOPE)
+//                .debug()
+                .build();
         return new OPService(service, accessToken);
     }
 

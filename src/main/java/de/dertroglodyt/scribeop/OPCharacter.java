@@ -144,7 +144,7 @@ public class OPCharacter {
         json.put("game_master_info", gameMasterInfo);
         json.put("is_game_master_only", isGMOnly);
         json.put("dynamic_sheet_template_id", dstTemplateID);
-        json.put("dynamic_sheet", dsData.asJSONObject());
+        json.put("dynamic_sheet", (dsData != null)?dsData.asJSONObject():null);
         JSONObject wp = new JSONObject();
         wp.put("character", json);
         String payload = wp.toString();
@@ -165,7 +165,7 @@ public class OPCharacter {
         json.put("bio", bio);
         json.put("game_master_info", gameMasterInfo);
         json.put("is_game_master_only", isGMOnly);
-        json.put("dynamic_sheet", dsData.asJSONObject());
+        json.put("dynamic_sheet", (dsData != null)?dsData.asJSONObject():null);
         JSONObject wp = new JSONObject();
         wp.put("character", json);
         String payload = wp.toString();
