@@ -31,7 +31,6 @@ public class OPService {
                 .provider(ObsidianPortalApi.class)
                 .apiKey(apiKey)
                 .apiSecret(apiSecret)
-//                .scope(SCOPE)
 //                .debug()
                 .build();
         Token requestToken = service.getRequestToken();
@@ -47,11 +46,23 @@ public class OPService {
         return new OPService(service, accessToken);
     }
 
+    static public String getAuthorizationUrl(String apiKey, String apiSecret, String callBackUrl) {
+        OAuthService service = new ServiceBuilder()
+                .provider(ObsidianPortalApi.class)
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+                .callback(callBackUrl)
+//                .debug()
+                .build();
+        return ObsidianPortalApi.AUTHORIZATION_URL.replaceAll("%s", service.getRequestToken().getToken());
+    }
+
     static public String getAuthorizationUrl(String apiKey, String apiSecret) {
         OAuthService service = new ServiceBuilder()
                 .provider(ObsidianPortalApi.class)
                 .apiKey(apiKey)
                 .apiSecret(apiSecret)
+//                .debug()
                 .build();
         return ObsidianPortalApi.AUTHORIZATION_URL.replaceAll("%s", service.getRequestToken().getToken());
     }
@@ -61,10 +72,23 @@ public class OPService {
                 .provider(ObsidianPortalApi.class)
                 .apiKey(apiKey)
                 .apiSecret(apiSecret)
-//                .scope(SCOPE)
 //                .debug()
                 .build();
         return service.getAccessToken(service.getRequestToken(), new Verifier(verificationCode));
+    }
+
+    static public OPService connect(String apiKey, String apiSecret, String verificationCode) {
+        OAuthService service = new ServiceBuilder()
+                .provider(ObsidianPortalApi.class)
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+//                .debug()
+                .build();
+        return new OPService(service, service.getAccessToken(service.getRequestToken(), new Verifier(verificationCode)));
+    }
+
+    static public OPService connect(String apiKey, String apiSecret, String accessToken, String accessSecret) {
+        return connect(apiKey, apiSecret, new Token(accessToken, accessSecret));
     }
 
     static public OPService connect(String apiKey, String apiSecret, Token accessToken) {
@@ -72,7 +96,6 @@ public class OPService {
                 .provider(ObsidianPortalApi.class)
                 .apiKey(apiKey)
                 .apiSecret(apiSecret)
-//                .scope(SCOPE)
 //                .debug()
                 .build();
         return new OPService(service, accessToken);
@@ -82,6 +105,14 @@ public class OPService {
         super();
         mService = service;
         mAccessToken = accessToken;
+    }
+
+    public String getAccessToken() {
+        return mAccessToken.getToken();
+    }
+
+    public String getAccessSecret() {
+        return mAccessToken.getSecret();
     }
 
     public Response get(String url) {
