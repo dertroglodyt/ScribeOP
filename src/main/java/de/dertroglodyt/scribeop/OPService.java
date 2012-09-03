@@ -22,6 +22,10 @@ public class OPService {
     private final OAuthService mService;
     public final Token mAccessToken;
 
+    /**
+     * @deprecated For quick and dirty tesing only.
+     */
+    @Deprecated
     static public OPService firstConnect(String apiKey, String apiSecret) {
         OAuthService service = new ServiceBuilder()
                 .provider(ObsidianPortalApi.class)
@@ -41,6 +45,26 @@ public class OPService {
         System.out.println("Access token: " + accessToken);
 
         return new OPService(service, accessToken);
+    }
+
+    static public String getAuthorizationUrl(String apiKey, String apiSecret) {
+        OAuthService service = new ServiceBuilder()
+                .provider(ObsidianPortalApi.class)
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+                .build();
+        return ObsidianPortalApi.AUTHORIZATION_URL.replaceAll("%s", service.getRequestToken().getToken());
+    }
+
+    static public Token getAccessToken(String apiKey, String apiSecret, String verificationCode) {
+        OAuthService service = new ServiceBuilder()
+                .provider(ObsidianPortalApi.class)
+                .apiKey(apiKey)
+                .apiSecret(apiSecret)
+//                .scope(SCOPE)
+//                .debug()
+                .build();
+        return service.getAccessToken(service.getRequestToken(), new Verifier(verificationCode));
     }
 
     static public OPService connect(String apiKey, String apiSecret, Token accessToken) {
