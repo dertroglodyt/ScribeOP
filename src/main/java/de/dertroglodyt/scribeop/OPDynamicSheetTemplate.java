@@ -10,7 +10,10 @@ import de.dertroglodyt.scribeop.json.JSONObject;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 /**
  *
@@ -45,13 +48,13 @@ public class OPDynamicSheetTemplate {
 
     public OPDynamicSheetTemplate(JSONObject json) throws JSONException, ParseException {
         super();
-//        System.out.println(json);
+        System.out.println(json);
         id = json.getString("id");
         name = json.getString("name");
         slug = json.getString("slug");
         user = new OPUserMini(json.getJSONObject("user"));
         gameSystem = new OPGameSystem(json.getJSONObject("game_system"));
-        htmlTemplate = json.getString("htmlTemplate");
+        htmlTemplate = json.getString("html_template");
         css = json.getString("css");
         javascript = json.getString("javascript");
         state = json.getString("state");
@@ -104,6 +107,17 @@ public class OPDynamicSheetTemplate {
                 + "\n CCSSub: " + cssSubmitted
                 + "\n JavaScriptSub: " + javascriptSubmitted);
         return sb.toString();
+    }
+
+    public ArrayList<String> getFieldNames() {
+        ArrayList<String> list = new ArrayList<String>(0);
+        String st = htmlTemplate;
+        while (st.indexOf("dsf_") >= 0) {
+            st = st.substring(st.indexOf("dsf_")+4);
+            String field = st.substring(0, st.indexOf("\""));
+            list.add(field);
+        }
+        return list;
     }
 
     // ToDo create, update, submit

@@ -33,10 +33,10 @@ public class OPCharacter {
     public final Date createdAt;
     public final Date updatedAt;
     // availability depends on visibility
-    public final String author;
+    public final OPUserMini author;
     public final boolean isPlayerCharacter;
     public final boolean isGameMasterOnly;
-    public final OPDynamicSheetTemplate dynamicSheetTemplate;
+    public final OPDynamicSheetTemplateMini dynamicSheetTemplate;
     public final OPDynamicSheetData dynamicSheet;
     public final String description;
     public final String descriptionHtml;
@@ -53,25 +53,29 @@ public class OPCharacter {
 
     public OPCharacter(JSONObject json) throws JSONException, ParseException {
         super();
-//        System.out.println(json);
+        System.out.println(json);
         id = json.getString("id");
         name = json.getString("name");
         slug = json.getString("slug");
         characterUrl = json.getString("character_url");
-        avatarUrl = json.getString("avatar_url");
+        avatarUrl = json.getStringOrNull("avatar_url");
         if (json.has("campaign") && !json.isNull("campaign")) {
             campaign = new OPCampaignMini(json.getJSONObject("campaign"));
         } else {
             campaign = null;
         }
-        visibility = json.getString("visibility");
+        if (json.has("visibility")) {
+            visibility = json.getString("visibility");
+        } else {
+            visibility = "public";
+        }
         createdAt = df.parse(json.getString("created_at"));
         updatedAt = df.parse(json.getString("updated_at"));
-        author = json.getString("author");
+        author = new OPUserMini(json.getJSONObject("author"));
         isPlayerCharacter = json.getBoolean("is_player_character");
         isGameMasterOnly = json.getBoolean("is_game_master_only");
         if (json.has("dynamic_sheet_template") && !json.isNull("dynamic_sheet_template")) {
-            dynamicSheetTemplate = new OPDynamicSheetTemplate(json.getJSONObject("dynamic_sheet_template"));
+            dynamicSheetTemplate = new OPDynamicSheetTemplateMini(json.getJSONObject("dynamic_sheet_template"));
         } else {
             dynamicSheetTemplate = null;
         }
@@ -137,15 +141,15 @@ public class OPCharacter {
                 + "\n URL: " + characterUrl
                 + "\n Slug: " + slug
                 + "\n AvatarURL: " + avatarUrl
-                + "\n Campaign: " + campaign.toLongString()
+                + "\n Campaign: " + ((campaign != null)?campaign.toLongString():null)
                 + "\n Visibility: " + visibility
                 + "\n Created: " + createdAt
                 + "\n Updated: " + updatedAt
                 + "\n Author: " + author
                 + "\n isPLayerCharacter: " + isPlayerCharacter
                 + "\n isGMOnly: " + isGameMasterOnly
-                + "\n DST: " + dynamicSheetTemplate.toLongString()
-                + "\n DS: " + dynamicSheet.toLongString()
+                + "\n DST: " + ((dynamicSheetTemplate != null)?dynamicSheetTemplate.toLongString():null)
+                + "\n DS: " + ((dynamicSheet != null)?dynamicSheet.toLongString():null)
                 + "\n Description: " + description
                 + "\n DescriptionHtml: " + descriptionHtml
                 + "\n Bio: " + bio
